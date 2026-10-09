@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="fundo">#EEF1EE</color>
+    <color name="texto">#1B2420</color>
+    <color name="texto_suave">#5C6B64</color>
+    <color name="linha">#CFD8D2</color>
+    <color name="superficie">#FFFFFF</color>
+    <color name="acento">#0F7A52</color>
+    <color name="acento_texto">#FFFFFF</color>
+    <color name="erro">#B3261E</color>
+</resources>

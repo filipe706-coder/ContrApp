@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NIF na Caixa</string>
+    <string name="rotulo">NÚMERO DE CONTRIBUINTE</string>
+    <string name="alterar">Alterar NIF</string>
+    <string name="guardar">Guardar</string>
+    <string name="titulo_editar">O teu NIF</string>
+    <string name="sub_editar">Fica guardado só neste telemóvel.</string>
+    <string name="hint_nif">9 dígitos</string>
+    <string name="hint_nome">Nome (opcional)</string>
+    <string name="dica">Mostra ao operador para fazer scan. Se não ler, ele pode escrever os números.</string>
+</resources>

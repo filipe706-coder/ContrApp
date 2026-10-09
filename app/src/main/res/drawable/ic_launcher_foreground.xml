@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ícone: cartão branco com barras de código de barras -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M34,38h40a4,4 0,0 1,4 4v24a4,4 0,0 1,-4 4h-40a4,4 0,0 1,-4 -4v-24a4,4 0,0 1,4 -4z" />
+    <path android:fillColor="#0B1410"
+        android:pathData="M37,43h2v20h-2z M41,43h1v20h-1z M44,43h3v20h-3z M49,43h1v20h-1z M52,43h2v20h-2z M56,43h3v20h-3z M61,43h1v20h-1z M64,43h2v20h-2z M68,43h1v20h-1z M70,43h2v20h-2z" />
+</vector>

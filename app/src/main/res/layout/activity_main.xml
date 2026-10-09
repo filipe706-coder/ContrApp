@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Um só ecrã com dois blocos: modoMostrar (o código) e modoEditar (o formulário).
+     A MainActivity mostra um e esconde o outro. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp">
+
+        <!-- ========== MODO MOSTRAR ========== -->
+        <LinearLayout
+            android:id="@+id/modoMostrar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:background="@drawable/bg_cartao"
+                android:elevation="4dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:letterSpacing="0.14"
+                    android:text="@string/rotulo"
+                    android:textColor="#555555"
+                    android:textSize="12sp" />
+
+                <com.filipe.nifcaixa.BarcodeView
+                    android:id="@+id/barcode"
+                    android:layout_width="match_parent"
+                    android:layout_height="140dp"
+                    android:layout_marginTop="14dp" />
+
+                <TextView
+                    android:id="@+id/digitos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="monospace"
+                    android:letterSpacing="0.08"
+                    android:textColor="#111111"
+                    android:textSize="34sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/nomeMostrado"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="#444444"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="@string/dica"
+                android:textColor="@color/texto_suave"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/botaoAlterar"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="28dp"
+                android:background="@drawable/bg_botao_sec"
+                android:stateListAnimator="@null"
+                android:text="@string/alterar"
+                android:textAllCaps="false"
+                android:textColor="@color/texto"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- ========== MODO EDITAR ========== -->
+        <LinearLayout
+            android:id="@+id/modoEditar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/titulo_editar"
+                android:textColor="@color/texto"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/sub_editar"
+                android:textColor="@color/texto_suave"
+                android:textSize="15sp" />
+
+            <EditText
+                android:id="@+id/campoNif"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="28dp"
+                android:background="@drawable/bg_campo"
+                android:fontFamily="monospace"
+                android:hint="@string/hint_nif"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:letterSpacing="0.1"
+                android:maxLength="9"
+                android:paddingHorizontal="16dp"
+                android:textColor="@color/texto"
+                android:textColorHint="@color/texto_suave"
+                android:textSize="24sp" />
+
+            <EditText
+                android:id="@+id/campoNome"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_campo"
+                android:hint="@string/hint_nome"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName|textCapWords"
+                android:paddingHorizontal="16dp"
+                android:textColor="@color/texto"
+                android:textColorHint="@color/texto_suave"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/erro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/erro"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/botaoGuardar"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_botao"
+                android:stateListAnimator="@null"
+                android:text="@string/guardar"
+                android:textAllCaps="false"
+                android:textColor="@color/acento_texto"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </FrameLayout>
+</ScrollView>
