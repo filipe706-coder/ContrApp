@@ -1,0 +1,480 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Her Coronation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap">
+<style>
+/* Layout: a locked chamber. An unfinished crown sits at the top; each solved riddle sets one jewel in it. Three riddles, then the crowning. */
+:root{
+  --night:#150e1c;
+  --velvet:#2a1630;
+  --gold:#d9b25f;
+  --gold-dim:#8a7044;
+  --parchment:#efe2c4;
+  --ruby:#b8323f;
+  --display:"IM Fell English SC","Times New Roman",serif;
+  --body:"EB Garamond",Garamond,Georgia,serif;
+  color-scheme:dark;
+}
+html,body{background:var(--night)}
+body{
+  color:var(--parchment);font-family:var(--body);font-size:1.15rem;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  background:radial-gradient(ellipse at 50% 0%,var(--velvet) 0%,var(--night) 70%) fixed;
+}
+#dust{position:fixed;inset:0;pointer-events:none;z-index:0}
+main{position:relative;z-index:1;max-width:32rem;margin:0 auto;padding-block:2.5rem 4rem;display:flex;flex-direction:column;align-items:center;gap:2rem;text-align:center}
+h1,h2{font-family:var(--display);font-weight:400;color:var(--gold);margin:0;text-wrap:balance}
+h1{font-size:clamp(2rem,8vw,3rem);line-height:1.1}
+h2{font-size:1.5rem}
+p{margin:0}
+.eyebrow{font-family:var(--display);letter-spacing:.25em;font-size:.8rem;color:var(--gold-dim)}
+
+/* The crown: grey and empty at first; jewels light up one by one */
+.crown{width:170px;max-width:100%;height:auto;transition:filter 1s}
+.crown .body{fill:#3a2d3c;stroke:var(--gold-dim);transition:fill 1.2s}
+.crown .gem{fill:#241a28;stroke:var(--gold-dim);stroke-width:1.5;transition:fill .8s}
+.crown .gem.lit{fill:var(--ruby);filter:drop-shadow(0 0 6px var(--ruby))}
+.crown.done{filter:drop-shadow(0 0 22px rgba(217,178,95,.55))}
+.crown.done .body{fill:var(--gold)}
+
+.stage{width:100%;display:flex;flex-direction:column;align-items:center;gap:1.25rem}
+.stage.in{animation:rise 1.1s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(14px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+
+.riddle{font-style:italic;font-size:1.25rem;max-width:28rem}
+.count{font-family:var(--display);color:var(--gold-dim);letter-spacing:.2em;font-size:.85rem}
+
+form{display:flex;flex-direction:column;gap:.75rem;width:100%;max-width:22rem}
+input{
+  font:inherit;color:var(--parchment);background:rgba(239,226,196,.06);
+  border:0;border-bottom:1px solid var(--gold-dim);padding:.6rem .4rem;text-align:center;
+}
+input::placeholder{color:var(--gold-dim);font-style:italic}
+input:focus{outline:none;border-bottom-color:var(--gold);background:rgba(239,226,196,.1)}
+.btn{
+  font-family:var(--display);font-size:1rem;letter-spacing:.14em;
+  background:transparent;color:var(--gold);border:1px solid var(--gold);
+  padding:.75rem 1.5rem;cursor:pointer;transition:background .3s,color .3s;
+}
+.btn:hover{background:var(--gold);color:var(--night)}
+.btn:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+.shake{animation:shake .45s}
+@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(7px)}75%{transform:translateX(-4px)}}
+.reply{min-height:1.6em;font-style:italic;color:var(--gold)}
+.hint{font-size:1rem;color:var(--parchment);opacity:.8;border-top:1px solid var(--gold-dim);padding-top:.75rem}
+
+.verse{max-width:28rem}
+.titles{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.3rem;font-style:italic}
+.sign{font-family:var(--display);color:var(--gold)}
+.choices{display:flex;gap:1.5rem;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:.5rem;min-height:3.5rem}
+.btn.yes{background:var(--gold);color:var(--night);padding:.85rem 2.2rem;font-size:1.15rem;transition:transform .25s}
+.btn.yes:hover{background:var(--parchment)}
+.btn.no{transition:left .25s ease,top .25s ease;touch-action:none;user-select:none;-webkit-user-select:none}
+.btn.no.loose{position:fixed;z-index:6;margin:0;background:var(--night)}
+.yes-msg{font-family:var(--display);color:var(--gold);font-size:clamp(1.5rem,6vw,2.2rem);line-height:1.2;text-wrap:balance}
+
+/* Owner-only editor for the ending */
+.edit-toggle{
+  position:fixed;z-index:5;
+  right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  font-family:var(--display);letter-spacing:.1em;font-size:.85rem;
+  background:var(--night);color:var(--gold);border:1px solid var(--gold-dim);padding:.55rem 1rem;cursor:pointer;
+}
+.edit-toggle:hover{border-color:var(--gold)}
+.edit-toggle:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.editor{width:100%;max-width:28rem;text-align:left;display:flex;flex-direction:column;gap:1rem;
+  border:1px solid var(--gold-dim);padding:1.25rem;background:rgba(21,14,28,.85);margin-top:1rem}
+.editor h2{font-size:1.2rem;text-align:center}
+.editor label{display:flex;flex-direction:column;gap:.3rem;font-family:var(--display);letter-spacing:.12em;font-size:.8rem;color:var(--gold-dim)}
+.editor small{font-family:var(--body);letter-spacing:0;font-style:italic;font-size:.85rem}
+.editor input,.editor textarea{font:inherit;font-family:var(--body);font-size:1.05rem;letter-spacing:0;color:var(--parchment);
+  background:rgba(239,226,196,.06);border:1px solid var(--gold-dim);padding:.5rem .6rem;text-align:left;resize:vertical}
+.editor input:focus,.editor textarea:focus{outline:none;border-color:var(--gold)}
+.editor .row{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:flex-end}
+.editor .ghost{border-color:var(--gold-dim);color:var(--gold-dim)}
+.status{min-height:1.4em;font-style:italic;color:var(--gold);text-align:center}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<canvas id="dust" aria-hidden="true"></canvas>
+
+<main>
+  <svg class="crown" id="crown" viewBox="0 0 120 90" aria-hidden="true">
+    <path class="body" d="M8 70 L14 22 L38 46 L60 10 L82 46 L106 22 L112 70 Z" stroke-width="2" stroke-linejoin="round"/>
+    <rect class="body" x="8" y="70" width="104" height="12" rx="2" stroke-width="2"/>
+    <circle class="gem" cx="30" cy="62" r="6"/>
+    <circle class="gem" cx="60" cy="56" r="7.5"/>
+    <circle class="gem" cx="90" cy="62" r="6"/>
+  </svg>
+
+  <!-- Intro -->
+  <section class="stage" id="intro">
+    <p class="eyebrow">A crown is waiting · but it is unfinished</p>
+    <h1>Three jewels are missing</h1>
+    <p class="verse">Each one is hidden inside a memory that only you and I share. Answer the riddles and the crown will remember who it belongs to.</p>
+    <button class="btn" id="begin">Begin</button>
+  </section>
+
+  <!-- Riddle (reused for all three) -->
+  <section class="stage" id="riddleStage" hidden>
+    <p class="count" id="count"></p>
+    <p class="riddle" id="riddle"></p>
+    <form id="form" autocomplete="off">
+      <div id="fields" style="display:flex;flex-direction:column;gap:.75rem"></div>
+      <button class="btn" type="submit">Answer</button>
+    </form>
+    <p class="reply" id="reply" aria-live="polite"></p>
+    <p class="hint" id="hint" hidden></p>
+  </section>
+
+  <!-- The crowning -->
+  <section class="stage" id="finale" hidden>
+    <p class="eyebrow" id="endEyebrow"></p>
+    <h1 id="queen"></h1>
+    <ul class="titles" id="titles"></ul>
+    <p class="verse" id="final"></p>
+    <p class="sign" id="sign"></p>
+
+    <div class="choices" id="choices">
+      <button class="btn yes" type="button" id="yesBtn">Yes</button>
+      <button class="btn no" type="button" id="noBtn">No</button>
+    </div>
+    <p class="yes-msg" id="yesMsg" hidden></p>
+
+    <form class="editor" id="editor" hidden>
+      <h2>Edit the ending</h2>
+      <label for="edEyebrow">Small line above her name<input id="edEyebrow"></label>
+      <label for="edName">Her name<input id="edName"></label>
+      <label for="edTitles">Royal titles <small>One per line</small><textarea id="edTitles" rows="4"></textarea></label>
+      <label for="edFinal">Your message<textarea id="edFinal" rows="6"></textarea></label>
+      <label for="edSign">Signature<input id="edSign"></label>
+      <label for="edYes">Message after she taps Yes<input id="edYes"></label>
+      <label for="edWkTitle">Next page: big line<input id="edWkTitle"></label>
+      <label for="edWkText">Next page: your text<textarea id="edWkText" rows="4"></textarea></label>
+      <div class="row">
+        <button class="btn ghost" type="button" id="edCancel">Cancel</button>
+        <button class="btn" type="submit" id="edSave">Save</button>
+      </div>
+    </form>
+    <p class="status" id="edStatus" aria-live="polite"></p>
+  </section>
+
+  <!-- After Yes: the weekend invitation -->
+  <section class="stage" id="weekend" hidden>
+    <p class="eyebrow">A royal request</p>
+    <h1 id="wkTitle"></h1>
+    <p class="verse" id="wkText"></p>
+    <p class="sign" id="wkSign"></p>
+  </section>
+</main>
+
+<button class="edit-toggle" id="editToggle" type="button" hidden>Edit the ending</button>
+
+<script>
+/* ===== EVERYTHING YOU MIGHT WANT TO CHANGE IS HERE ===== */
+const CONFIG = {
+  name: "My Queen",
+  clues: [
+    {
+      riddle: "Before we ever saw each other, there were only words on a screen. Tell me the day they began, and the place where they lived.",
+      fields: ["The day (dd/mm)", "The place"],
+      // Every group must be matched by at least one word in her answer:
+      // Day: needs "29" somewhere. Month: "01", "1" or "jan"(eiro/uary). Place: "boo".
+      accept: [["29"], [" 01 ", " 1 ", "jan"], ["boo"]],
+      hint: "It was the end of January. And the place shares its name with what a ghost says.",
+      reward: "The first jewel. It all started with a hello."
+    },
+    {
+      riddle: "Our first date was no palace, and no candlelit hall. Something much humbler, and I would choose it again every time. Where were we?",
+      fields: ["The place"],
+      accept: [["mc", "valongo"]],
+      hint: "Golden arches, in a town just outside Porto.",
+      reward: "The second jewel. Best table I ever sat at."
+    },
+    {
+      riddle: "On our first journey away together, we warmed our hands around something unusual. It wasn't coffee and it wasn't tea. What did we drink?",
+      fields: ["The drink"],
+      accept: [["therm", "term"]],
+      hint: "It came from deep inside the earth, already warm.",
+      reward: "The third jewel. The crown is complete."
+    }
+  ],
+  wrong: ["The crown doesn't recognise that one…", "Not quite. Close your eyes and remember.", "The jewel stays hidden. Try once more."],
+  eyebrow: "The crown remembers · crowned this night",
+  titles: ["Keeper of All Things That Needed Doing", "Sovereign of Hard Days", "Guardian of My Heart"],
+  final: "You have been carrying so much lately, and I see all of it. You don't have to earn rest, and you never had to earn being loved. Tonight the crown is yours, and so am I.",
+  signature: "— Your loyal subject",
+  yes: "I knew it. Long live my princess.",
+  wkTitle: "I wanna be with you for as much time as possible.",
+  wkText: "Would it be possible to be with you this weekend? I would love if it were possible for me to be with your highness at her castle this end of week.",
+  noLabels: ["No", "Are you sure?", "Nope", "Try again", "Not this one", "Wrong button"]
+};
+
+/* ===== HOW IT WORKS =====
+   - step counts which riddle she's on (0, 1, 2).
+   - showRiddle() writes the riddle and creates one input per entry in "fields".
+   - On submit, clean() lowercases her answer, removes accents and turns any
+     symbol (/ - . etc.) into a space, so "29/10" becomes "29 10". Then
+     isCorrect() checks that every "accept" group has at least one match.
+   - Right: a jewel lights up and the next riddle appears.
+     Wrong: the form shakes; after 2 wrong tries the hint appears.
+   - After the last jewel: the crown turns gold and the finale is shown. */
+const $ = id => document.getElementById(id);
+let step = 0, misses = 0;
+
+const clean = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+// Spaces are added at both ends so " 1 " only matches a lone 1 (not the 1 inside 10 or 2021).
+const isCorrect = (answer, groups) => groups.every(g => g.some(word => (" " + answer + " ").includes(word)));
+
+function enter(el){ el.hidden = false; el.classList.remove("in"); void el.offsetWidth; el.classList.add("in"); }
+
+function showRiddle(){
+  const c = CONFIG.clues[step];
+  misses = 0;
+  $("count").textContent = `Riddle ${["I","II","III"][step] || step + 1} of ${["I","II","III"][CONFIG.clues.length - 1] || CONFIG.clues.length}`;
+  $("riddle").textContent = c.riddle;
+  $("reply").textContent = "";
+  $("hint").hidden = true;
+  $("fields").innerHTML = "";
+  c.fields.forEach((label, i) => {
+    const inp = document.createElement("input");
+    inp.id = `answer-${step}-${i}`; inp.placeholder = label; inp.setAttribute("aria-label", label);
+    $("fields").appendChild(inp);
+  });
+  enter($("riddleStage"));
+  $("fields").querySelector("input").focus();
+}
+
+$("begin").addEventListener("click", () => { $("intro").hidden = true; showRiddle(); });
+
+$("form").addEventListener("submit", e => {
+  e.preventDefault();
+  const c = CONFIG.clues[step];
+  const answer = clean([...$("fields").querySelectorAll("input")].map(i => i.value).join(" "));
+  if (!answer) return;
+
+  if (isCorrect(answer, c.accept)) {
+    document.querySelectorAll(".gem")[step].classList.add("lit");
+    $("reply").textContent = c.reward;
+    step++;
+    setTimeout(() => step < CONFIG.clues.length ? showRiddle() : crown(), 1800);
+  } else {
+    $("reply").textContent = CONFIG.wrong[misses % CONFIG.wrong.length];
+    misses++;
+    $("form").classList.remove("shake"); void $("form").offsetWidth; $("form").classList.add("shake");
+    if (misses >= 2) { $("hint").textContent = "A whisper: " + c.hint; $("hint").hidden = false; }
+  }
+});
+
+/* ===== THE ENDING TEXT =====
+   The saved ending lives in a separate file, finale.json, next to the page.
+   On load we read it and it replaces the default text in CONFIG.
+   If it can't be read, the defaults in CONFIG are used. */
+const ENDING_KEYS = ["eyebrow", "name", "titles", "final", "signature", "yes", "wkTitle", "wkText"];
+const SAVED_ENDING = {"eyebrow": "You found all the jewels", "name": "My Vulpix", "titles": ["My princess", "The one that excels at everything", "The most hardworking person ever", "The kindest person on earth"], "final": "You are amazing , and I had the idea of making this to symbolize your coronation. I wanna show you how much u matter to me and this is just the start and for that i have a question :Will you be my princess once again?", "signature": "— Your Loyal Subject. My queen"};
+const endingReady = Promise.resolve(SAVED_ENDING)
+  .then(d => { if (d) ENDING_KEYS.forEach(k => { if (d[k] != null) CONFIG[k] = d[k]; }); })
+  .catch(() => {});
+
+function renderEnding(data = CONFIG){
+  $("endEyebrow").textContent = data.eyebrow;
+  $("queen").textContent = data.name;
+  $("titles").innerHTML = "";
+  data.titles.forEach(t => { const li = document.createElement("li"); li.textContent = t; $("titles").appendChild(li); });
+  $("final").textContent = data.final;
+  $("sign").textContent = data.signature;
+  $("yesMsg").textContent = data.yes;
+  $("wkTitle").textContent = data.wkTitle;
+  $("wkText").textContent = data.wkText;
+  $("wkSign").textContent = data.signature;
+}
+
+let crowned = false;
+async function crown(){
+  await endingReady;
+  $("intro").hidden = true;
+  $("riddleStage").hidden = true;
+  document.querySelectorAll(".gem").forEach(g => g.classList.add("lit"));
+  $("crown").classList.add("done");
+  renderEnding();
+  if (!crowned) { enter($("finale")); startDust(); }
+  crowned = true;
+}
+
+/* ===== OWNER-ONLY EDITOR =====
+   - claude.use("user") tells us who is viewing. The button only appears
+     if the viewer can edit the page (you). She will never see it.
+   - "Edit the ending" jumps straight to the last screen and opens a form.
+   - While you type, the screen updates so you can see how it looks.
+   - Save writes your text into finale.json using claude.use("artifact"),
+     which publishes a new version of the page. Cancel puts the old text back. */
+let artifactCap = null;
+(async () => {
+  if (!window.claude?.use) return;
+  const user = await claude.use("user");
+  if (!(await user?.canEdit())) return;
+  artifactCap = await claude.use("artifact");
+  if (artifactCap) $("editToggle").hidden = false;
+})();
+
+const readForm = () => ({
+  eyebrow: $("edEyebrow").value.trim(),
+  name: $("edName").value.trim() || CONFIG.name,
+  titles: $("edTitles").value.split("\n").map(s => s.trim()).filter(Boolean),
+  final: $("edFinal").value.trim(),
+  signature: $("edSign").value.trim(),
+  yes: $("edYes").value.trim() || CONFIG.yes,
+  wkTitle: $("edWkTitle").value.trim(),
+  wkText: $("edWkText").value.trim()
+});
+
+$("editToggle").addEventListener("click", async () => {
+  await crown();
+  $("edEyebrow").value = CONFIG.eyebrow;
+  $("edName").value = CONFIG.name;
+  $("edTitles").value = CONFIG.titles.join("\n");
+  $("edFinal").value = CONFIG.final;
+  $("edSign").value = CONFIG.signature;
+  $("edYes").value = CONFIG.yes;
+  $("edWkTitle").value = CONFIG.wkTitle;
+  $("edWkText").value = CONFIG.wkText;
+  $("edStatus").textContent = "";
+  $("editor").hidden = false;
+  $("editToggle").hidden = true;
+  $("edName").focus();
+});
+
+$("editor").addEventListener("input", () => renderEnding(readForm()));
+
+$("edCancel").addEventListener("click", () => {
+  renderEnding();
+  $("editor").hidden = true;
+  $("editToggle").hidden = false;
+});
+
+$("editor").addEventListener("submit", async e => {
+  e.preventDefault();
+  const data = readForm();
+  $("edSave").disabled = true;
+  $("edStatus").textContent = "Saving…";
+  try {
+    await artifactCap.publish({"finale.json": JSON.stringify(data, null, 2)});
+    Object.assign(CONFIG, data);
+    renderEnding();
+    $("editor").hidden = true;
+    $("editToggle").hidden = false;
+    $("edStatus").textContent = "Saved. This is the ending she will see.";
+  } catch (err) {
+    const msg = {
+      conflict: "The page changed somewhere else. It will reload with the latest version.",
+      not_writer: "Only the owner can save the ending.",
+      not_granted: "Saving isn't available in this view.",
+      capability_disabled: "Saving isn't available in this view. Open the page from your Claude app.",
+      rate_limited: "Saving too quickly. Wait a moment and press Save again."
+    }[err?.code] || "Couldn't save. Press Save again.";
+    $("edStatus").textContent = msg;
+  } finally {
+    $("edSave").disabled = false;
+  }
+});
+
+/* ===== YES / NO =====
+   - "No" can never be pressed. dodge() moves it to a random spot on the
+     screen, at least 140px away from where her finger or mouse is.
+   - On a PC it runs away as soon as the mouse gets close (mousemove).
+   - On a phone, touching it (touchstart / pointerdown) moves it first,
+     and preventDefault() cancels the tap so it never counts.
+   - Each time it escapes, its label changes and "Yes" grows a little.
+   - "Yes" hides the buttons, shows your Yes message and bursts hearts.
+     3 seconds later the last screen is hidden and the weekend page appears. */
+const noBtn = $("noBtn"), yesBtn = $("yesBtn");
+let dodges = 0, answered = false;
+
+function dodge(px, py){
+  if (answered) return;
+  const r = noBtn.getBoundingClientRect();
+  if (px == null){ px = r.left + r.width / 2; py = r.top + r.height / 2; }
+  const m = 16, w = r.width, h = r.height;
+  let x, y, tries = 0;
+  do {
+    x = m + Math.random() * Math.max(0, innerWidth - w - 2 * m);
+    y = m + Math.random() * Math.max(0, innerHeight - h - 2 * m);
+    tries++;
+  } while (tries < 30 && Math.hypot(x + w / 2 - px, y + h / 2 - py) < 140);
+  noBtn.classList.add("loose");
+  noBtn.style.left = x + "px"; noBtn.style.top = y + "px";
+  dodges++;
+  noBtn.textContent = CONFIG.noLabels[dodges % CONFIG.noLabels.length];
+  yesBtn.style.transform = `scale(${Math.min(1 + dodges * .08, 1.8)})`;
+}
+
+const block = e => { e.preventDefault(); e.stopPropagation(); };
+noBtn.addEventListener("touchstart", e => { block(e); const t = e.touches[0]; dodge(t.clientX, t.clientY); }, {passive: false});
+noBtn.addEventListener("pointerdown", e => { block(e); dodge(e.clientX, e.clientY); });
+noBtn.addEventListener("click", e => { block(e); dodge(); });
+noBtn.addEventListener("focus", () => noBtn.blur());
+document.addEventListener("mousemove", e => {
+  if (answered || $("finale").hidden) return;
+  const r = noBtn.getBoundingClientRect();
+  if (Math.hypot(r.left + r.width / 2 - e.clientX, r.top + r.height / 2 - e.clientY) < Math.max(r.width, 90)) dodge(e.clientX, e.clientY);
+});
+addEventListener("resize", () => { if (noBtn.classList.contains("loose")) dodge(); });
+
+yesBtn.addEventListener("click", () => {
+  answered = true;
+  $("choices").hidden = true;
+  enter($("yesMsg"));
+  burst();
+  // After the hearts, move on to the weekend page
+  setTimeout(() => {
+    $("finale").hidden = true;
+    scrollTo({top: 0, behavior: "smooth"});
+    enter($("weekend"));
+  }, 3000);
+});
+
+/* Gold dust: small glowing dots drifting down a full-screen canvas.
+   burst() adds hearts that fly out from the middle of the screen. */
+let specks = [], hearts = [], dustOn = false;
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function startDust(){
+  if (reduced || dustOn) return;
+  dustOn = true;
+  const c = $("dust"), ctx = c.getContext("2d");
+  const resize = () => { c.width = innerWidth * devicePixelRatio; c.height = innerHeight * devicePixelRatio; };
+  resize(); addEventListener("resize", resize);
+  specks = Array.from({length: 90}, () => ({x: Math.random(), y: Math.random() - 1, r: Math.random() * 1.8 + .4, v: Math.random() * .0015 + .0006, s: Math.random() * 7}));
+  (function frame(){
+    const d = devicePixelRatio;
+    ctx.clearRect(0, 0, c.width, c.height);
+    for (const p of specks){
+      p.y += p.v; p.s += .02; if (p.y > 1.05){ p.y = -.05; p.x = Math.random(); }
+      ctx.beginPath(); ctx.arc((p.x + Math.sin(p.s) * .01) * c.width, p.y * c.height, p.r * d, 0, 7);
+      ctx.fillStyle = `rgba(217,178,95,${.4 + Math.sin(p.s) * .3})`; ctx.fill();
+    }
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    hearts = hearts.filter(h => h.life > 0);
+    for (const h of hearts){
+      h.x += h.vx; h.y += h.vy; h.vy += .06; h.life -= .008;
+      ctx.globalAlpha = Math.max(0, Math.min(1, h.life));
+      ctx.fillStyle = h.gold ? "#d9b25f" : "#b8323f";
+      ctx.font = `${h.size * d}px serif`;
+      ctx.fillText("♥", h.x * d, h.y * d);
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(frame);
+  })();
+}
+function burst(){
+  if (reduced) return;
+  startDust();
+  for (let i = 0; i < 140; i++){
+    const a = Math.random() * Math.PI * 2, sp = 2 + Math.random() * 7;
+    hearts.push({x: innerWidth / 2, y: innerHeight / 2, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 3, size: 12 + Math.random() * 22, life: 1 + Math.random() * .8, gold: Math.random() < .35});
+  }
+}
+</script>
+
+</body></html>
